@@ -39,8 +39,8 @@ Even radiologists disagree heavily on ovary boundaries — measured inter-rater 
 
 ## Read more
 
-- 📄 **[Full report (PDF)](report/EndoSAM_FinalReport.pdf)**
-- 🔬 [Methodology](docs/methodology.md) · [Results](docs/results.md) · [References](docs/references.md)
+- **[Full report (PDF)](report/EndoSAM_FinalReport.pdf)**
+- [Methodology](docs/methodology.md) · [Results](docs/results.md) · [References](docs/references.md)
 
 ## A note on code
 
