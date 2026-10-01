@@ -38,12 +38,6 @@ Segmenting uterus, ovary, and endometrioma in pelvic MRI on the UT-EndoMRI datas
 
 After excluding 8 of 35 rater comparisons made on different sequences, corrected inter-rater Dice is 0.605 ± 0.386 for uterus and 0.345 ± 0.377 for ovary. The ovary value is lower than liver (0.92), kidney (0.87), prostate (0.83), and pancreas (0.78). The report notes that direct comparison is approximate, since each task uses different datasets and annotation protocols.
 
-## Qualitative results
-
-![Qualitative comparison on test subjects](report/figures/fig_gallery.png)
-
-*Test subjects D2-028 (uterus), D2-000 (ovary), and D2-071 (endometrioma). Row 1: ground truth. Row 2: baseline U-Net. Row 3: binary model. Row 4: MedSAM decoder (Figure 6 of the report).*
-
 ## Read more
 
 - **[Full report (PDF)](report/EndoSAM_FinalReport.pdf)**
@@ -55,7 +49,7 @@ Solution code is kept private in line with course academic-integrity policy. I'm
 
 ## Author
 
-**Antony Gerold Arockiasamy**, ENGG\*6302 Medical Image Processing, University of Guelph.
+**Antony Gerold Arockiasamy**, MEng Computer Engineering, University of Guelph. ENGG\*6302 Medical Image Processing, supervised by Prof. Eran Ukwatta (Imaging AI Lab).
 
 ## License
 
