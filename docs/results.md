@@ -1,101 +1,84 @@
 # Results
 
-## Headline
+All numbers are from the final report ([PDF](../report/EndoSAM_FinalReport.pdf)).
+
+## Alignment correction
+
+| | Before | After |
+|---|---|---|
+| Usable subjects | 59 | 96 |
+| MedSAM oracle (uterus) | 0.356 | 0.842 |
+| Inter-rater (uterus) | 0.327 | 0.605 |
+
+Going from 0.356 to 0.842 for uterus just by loading the right image was bigger than any model change in the study.
+
+## MedSAM (Dice)
+
+| Prompt | Uterus | Ovary | Endo |
+|---|---|---|---|
+| Oracle (304 slices) | 0.842 | 0.744 | 0.696 |
+| Simulated manual (304 slices) | 0.805 | 0.683 | 0.641 |
+| **Decoder fine-tuning (234 slices)** | **0.857** | **0.783** | **0.744** |
+
+Zero-shot with oracle boxes already works well. Simulated manual boxes drop only 4 to 8 percent. Decoder fine-tuning gives the best numbers, improving over the zero-shot oracle by +0.015 (uterus), +0.039 (ovary), and +0.048 (endometrioma).
+
+## U-Net (Dice, test)
 
 | Method | Uterus | Ovary | Endo |
 |---|---|---|---|
-| **MedSAM decoder fine-tuned** | **0.857** | **0.783** | **0.744** |
-| MedSAM oracle box | 0.842 | 0.744 | 0.696 |
-| MedSAM simulated box | 0.805 | 0.683 | 0.641 |
-| Binary U-Net + FTL | — | 0.298 | 0.556† |
-| Multi-class U-Net | 0.656 | 0.000 | 0.000 |
-| RAovSeg (published) | — | 0.290 | — |
-| nnU-Net (published) | — | 0.272 | — |
-| Inter-rater (humans) | 0.605 | 0.345 | — |
+| Baseline U-Net | 0.656 | 0.000 | 0.000 |
+| Attention U-Net | 0.557 | 0.000 | 0.225 |
+| Binary Ovary | n/a | 0.298 | n/a |
+| Binary Endo | n/a | n/a | 0.556* |
 
-† 0.556 when detected; 0.389 averaged across all slices including non-detection.
+\* When detected. Overall mean: 0.389 (70 test slices).
 
-## The data-fix discovery
+Attention did worse for uterus on test (0.557 vs 0.656), probably from the extra SCSE parameters overfitting the small training set, but helped endometrioma appear at 0.225. The binary ovary model (0.298) matches the published RAovSeg (0.290) with a simpler setup: one model instead of a slice classifier plus a segmenter. The binary endometrioma overall mean of 0.389 reflects a detection rate of about 70%.
 
-| State | MedSAM Uterus Dice |
-|---|---|
-| Before alignment fix | 0.356 |
-| After alignment fix | **0.842** |
-| **Δ** | **+0.486** |
+## Auto-prompting (Dice)
 
-Larger than any architectural change in the project. **52 % of D1 subjects** had spatial misalignment from multi-sequence MRI acquisition.
+| Box source | Uterus | Ovary | Endo |
+|---|---|---|---|
+| Multi-class U-Net | 0.392 | 0.093 | 0.275 |
+| Binary models | n/a | 0.266 | 0.362 |
 
-## Class-imbalance ablation (RAovSeg's published finding, confirmed by our baselines)
+Localization is the bottleneck. Multi-class U-Net finds ovary in 3 of 83 slices; binary models find it in 63 of 83, but the resulting 0.266 is far below the 0.783 from oracle boxes, because the decoder was trained with perfect boxes and does not handle rough ones well.
 
-| Configuration | Ovary Dice |
-|---|---|
-| RAovSeg full (slice classifier + segmenter) | 0.290 |
-| RAovSeg without slice classifier | 0.013 |
-| Multi-class U-Net (no slice filter) | 0.000 |
-| Binary U-Net + FTL (implicit slice filter via training set) | 0.298 |
+## Complete comparison (Dice)
 
-The slice classifier is doing 95 % of the work. Binary models capture this benefit implicitly by training only on organ-containing slices.
-
-## MedSAM regime comparison
-
-| Regime | Uterus | Ovary | Endo | Realism |
+| Method | Uterus | Ovary | Endo | Type |
 |---|---|---|---|---|
-| Oracle box | 0.842 | 0.744 | 0.696 | Unrealistic (needs GT bbox) |
-| Simulated noisy box | 0.805 | 0.683 | 0.641 | Realistic — models radiologist drawing |
-| Decoder fine-tuned + oracle box | 0.857 | 0.783 | 0.744 | Unrealistic |
-| Auto-prompt (U-Net → MedSAM) | < binary | < binary | < binary | Realistic |
+| RAovSeg [5] | n/a | 0.290 | n/a | Published |
+| nnU-Net [5] | n/a | 0.272 | n/a | Published |
+| Inter-rater | 0.605 | 0.345 | n/a | Measured |
+| Baseline U-Net | 0.656 | 0.000 | 0.000 | Test |
+| Attention U-Net | 0.557 | 0.000 | 0.225 | Test |
+| Binary Ovary | n/a | 0.298 | n/a | Test |
+| Binary Endo | n/a | n/a | 0.556 | Test |
+| MedSAM Oracle | 0.842 | 0.744 | 0.696 | 304 sl. |
+| MedSAM Simulated | 0.805 | 0.683 | 0.641 | 304 sl. |
+| MedSAM Dec. FT | 0.857 | 0.783 | 0.744 | 234 sl. |
+| Auto-box (U-Net) | 0.392 | 0.093 | 0.275 | Test |
+| Auto-box (Binary) | n/a | 0.266 | 0.362 | Test |
 
-The **simulated noisy-box** result is the most clinically defensible comparison against RAovSeg.
+## Contributions stated in the report
 
-## Per-organ analysis
+1. Identification and correction of a mask alignment problem affecting more than half the dataset.
+2. The first evaluation of MedSAM on pelvic endometriosis MRI.
+3. Binary organ-specific models that match the published baseline with a simpler pipeline.
+4. The first endometrioma segmentation result.
 
-### Uterus
+## Limitations
 
-- Largest organ, most consistent boundaries.
-- Inter-rater Dice 0.605 — *all top methods exceed inter-rater*, meaning model predictions are at human level.
-- MedSAM decoder-FT 0.857 is approaching the theoretical ceiling for this dataset.
+- All training on CPU, which limited U-Net to 15 epochs and ruled out nnU-Net.
+- 2D slices only; no 3D volume information.
+- The simulated bounding box uses a derived formula, not actual radiologist annotations, though it is grounded in measured inter-rater variability.
+- The decoder still needs oracle boxes at test time.
+- Dice only; no boundary metrics such as Hausdorff distance.
+- The binary endometrioma result is from a small test set and would be more reliable with cross-validation.
 
-### Ovary
+## Future work
 
-- 0.3 – 2.5 % of image pixels.
-- Inter-rater Dice 0.345 — extreme human disagreement.
-- Binary U-Net 0.298 matches the published RAovSeg baseline.
-- MedSAM with a usable prompt jumps to 0.683 (simulated) or 0.783 (oracle) — **more than 2× the inter-rater ceiling**, suggesting MedSAM is generalising better than individual radiologists do on this annotation task.
+Training with perturbed boxes [16], a learnable prompt module [14], MedSAM-2 [17] for 3D context, nnU-Net [9] on GPU, and MedSAM-U [15] for uncertainty-based prompt refinement.
 
-### Endometrioma
-
-- Smallest, hardest, and previously unattempted on UT-EndoMRI.
-- Multi-class baseline: 0.000. Attention U-Net: 0.225.
-- Binary model: **0.556 when detected** (≈ 70 % detection rate, overall mean 0.389).
-- MedSAM decoder-FT: 0.744 — best result, but requires oracle box.
-
-## Inter-rater context
-
-Corrected inter-rater Dice on D1 (8 cross-sequence comparison pairs excluded):
-
-| Organ | Inter-rater Dice ± std |
-|---|---|
-| Uterus | 0.605 ± 0.386 |
-| Ovary | 0.345 ± 0.377 |
-
-Comparison to published inter-rater Dice on other tasks:
-
-| Organ / task | Inter-rater Dice |
-|---|---|
-| Liver | 0.92 |
-| Kidney | 0.87 |
-| Prostate | 0.83 |
-| Pancreas | 0.78 |
-| Uterus (this work) | 0.61 |
-| Ovary in endometriosis MRI | **0.345** |
-
-Caveat: cross-task inter-rater comparisons are approximate — different datasets, different protocols.
-
-## Limitations summary
-
-- **CPU-only training** → 15-epoch cap; no nnU-Net comparison; no 3D volumetric pipelines.
-- **2D slice processing** — no volumetric context.
-- **Simulated noisy boxes** are formula-derived, not from real radiologist annotations.
-- **Decoder fine-tuning still needs oracle boxes at test time** — auto-prompting chain documented but bottlenecked by upstream U-Net.
-- **Endometrioma small test set** — would benefit from cross-validation.
-- **Dice only.** Surgical planning would also need Hausdorff distance.
+Bracketed numbers refer to [references.md](references.md).
