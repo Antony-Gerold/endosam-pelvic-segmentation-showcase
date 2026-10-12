@@ -49,7 +49,7 @@ Solution code is kept private in line with course academic-integrity policy. I'm
 
 ## Author
 
-**Antony Gerold Arockiasamy**, MEng Computer Engineering, University of Guelph. ENGG\*6302 Medical Image Processing, supervised by Prof. Eran Ukwatta (Imaging AI Lab).
+**Antony Gerold Arockiasamy**, MEng Computer Engineering, University of Guelph. ENGG\*6302 Medical Image Processing, supervised by Prof. Eranga Ukwatta (Imaging AI Lab).
 
 ## License
 
