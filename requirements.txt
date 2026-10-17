@@ -1,0 +1,6 @@
+nibabel
+numpy
+Pillow
+segment-anything
+segmentation-models-pytorch
+torch
