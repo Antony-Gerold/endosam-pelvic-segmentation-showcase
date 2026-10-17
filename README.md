@@ -56,4 +56,4 @@ After excluding 8 of 35 rater comparisons made on different sequences, corrected
 
 ## License
 
-Documentation and figures: MIT, see [LICENSE](LICENSE).
+Code, documentation and figures: MIT, see [LICENSE](LICENSE).
