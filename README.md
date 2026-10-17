@@ -43,9 +43,12 @@ After excluding 8 of 35 rater comparisons made on different sequences, corrected
 - **[Full report (PDF)](report/EndoSAM_FinalReport.pdf)**
 - [Methodology](docs/methodology.md), [Results](docs/results.md), [References](docs/references.md)
 
-## A note on code
+## How to run
 
-Solution code is kept private in line with course academic-integrity policy. I'm happy to walk through the implementation, the alignment fix, and the MedSAM fine-tuning approach with anyone interested.
+1. `pip install -r requirements.txt`
+2. Download the UT-EndoMRI dataset and the MedSAM `medsam_vit_b.pth` weights, then set `DATASET_ROOT` and `MEDSAM_WEIGHTS` in the first cell of each notebook.
+3. Run `code/notebook1_unet.ipynb` top to bottom for the U-Net experiments. It saves the U-Net checkpoints.
+4. Run `code/notebook2_medsam.ipynb` for the MedSAM experiments. Its last cell loads the U-Net checkpoints from notebook 1.
 
 ## Author
 
